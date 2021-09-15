@@ -1,29 +1,74 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
+import Layout from '@/layout'
 
 Vue.use(VueRouter)
 
-const routes = [
+export const constantRouters = [
   {
     path: '/',
-    name: 'Home',
-    component: Home
+    redirect: '/home'
   },
   {
-    path: '/about',
-    name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+    path: '/login',
+    name: 'Login',
+    component: () => import(/* webpackChunkName: "login" */ '../views/Login.vue')
+  },
+  {
+    path: '/',
+    component: Layout,
+    children: [
+      {
+        path: 'home',
+        name: 'Dashboard',
+        component: () => import(/* webpackChunkName: "home" */'../views/Home.vue'),
+        meta: {
+          title: '首页',
+          hidden: false,
+          breadcrumb: true,
+          affix: true,
+          noCache: false
+        }
+      }
+    ]
+  },
+  {
+    path: '/test',
+    component: Layout,
+    redirect: 'noredirect',
+    meta: {
+      title: '测试页面',
+      alwaysShow: true
+    },
+    children: [
+      {
+        path: 'about',
+        name: 'About',
+        component: () => import(/* webpackChunkName: "about" */ '../views/About.vue'),
+        meta: {
+          title: '关于我们',
+          noCache: true
+        }
+      }
+    ]
+  },
+  {
+    path: '/redirect',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        path: '/redirect/:path*',
+        component: () => import('@/views/redirect')
+      }
+    ]
   }
 ]
 
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
-  routes
+  routes: constantRouters
 })
 
 export default router
